@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#f4f5ef">
+	<title>Livraria | Consulta e retirada</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			color-scheme: light;
+			--paper: #f4f5ef;
+			--surface: #fffefa;
+			--ink: #182b25;
+			--muted: #68736c;
+			--line: #dce2d9;
+			--green: #23634a;
+			--green-dark: #194a38;
+			--coral: #bd543e;
+			--yellow: #e7bd58;
+			--soft-green: #e7efe8;
+			--shadow: 0 14px 40px rgba(24, 43, 37, .06);
+		}
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			background-color: var(--paper);
+			background-image: radial-gradient(#dce4d9 0.65px, transparent 0.65px);
+			background-size: 18px 18px;
+			color: var(--ink);
+			font-family: "DM Sans", sans-serif;
+			font-size: 15px;
+		}
+		button, input, select { font: inherit; }
+		button { cursor: pointer; }
+		.shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+		.topbar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 20px;
+			min-height: 76px;
+			border-bottom: 1px solid var(--line);
+		}
+		.brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: .02em; }
+		.brand-mark {
+			display: grid;
+			width: 37px;
+			height: 37px;
+			place-items: center;
+			background: var(--green);
+			color: #fffefa;
+			font-family: "Playfair Display", serif;
+			font-size: 21px;
+		}
+		.brand small, .eyebrow, .mono { font-family: "DM Mono", monospace; }
+		.brand small { color: var(--muted); font-size: 11px; font-weight: 400; }
+		.top-meta { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 13px; }
+		.live-dot { width: 8px; height: 8px; border-radius: 50%; background: #51946d; box-shadow: 0 0 0 4px #dceade; }
+		.intro { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding: 34px 0 27px; }
+		.eyebrow { margin: 0 0 8px; color: var(--coral); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+		h1, h2, h3, p { margin-top: 0; }
+		h1 { margin-bottom: 0; font-family: "Playfair Display", Georgia, serif; font-size: clamp(32px, 5vw, 48px); line-height: 1.1; font-weight: 600; }
+		.intro-note { max-width: 250px; margin-bottom: 2px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+		main { padding-bottom: 54px; }
+		.module {
+			margin: 0 0 22px;
+			padding: 24px;
+			background: rgba(255, 254, 250, .94);
+			border: 1px solid var(--line);
+			box-shadow: var(--shadow);
+			animation: enter .5s both;
+		}
+		.module:nth-child(2) { animation-delay: 55ms; }
+		.module:nth-child(3) { animation-delay: 100ms; }
+		.module:nth-child(4) { animation-delay: 145ms; }
+		.module:nth-child(5) { animation-delay: 190ms; }
+		@keyframes enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+		.module-head { display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+		.module-title { display: flex; align-items: baseline; gap: 11px; margin: 0; font-size: 19px; font-weight: 600; }
+		.module-index { color: var(--coral); font: 11px "DM Mono", monospace; }
+		.module-desc { margin: 5px 0 0 29px; color: var(--muted); font-size: 13px; }
+		.search-row, .form-row { display: flex; align-items: end; gap: 10px; }
+		.search-row { margin-bottom: 17px; }
+		.field { display: grid; min-width: 0; flex: 1; gap: 6px; }
+		label { color: var(--muted); font-size: 12px; font-weight: 600; }
+		input, select {
+			width: 100%;
+			min-height: 42px;
+			padding: 9px 11px;
+			border: 1px solid #cdd6cc;
+			border-radius: 2px;
+			background: #fff;
+			color: var(--ink);
+			outline: none;
+		}
+		input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(35, 99, 74, .12); }
+		.button {
+			min-height: 42px;
+			padding: 9px 15px;
+			border: 1px solid var(--green);
+			border-radius: 2px;
+			background: var(--green);
+			color: #fff;
+			font-weight: 600;
+			transition: background .16s, transform .16s;
+		}
+		.button:hover { background: var(--green-dark); }
+		.button:active { transform: translateY(1px); }
+		.button.secondary { background: transparent; color: var(--green); }
+		.button.secondary:hover { background: var(--soft-green); }
+		.button.compact { min-height: 34px; padding: 6px 10px; font-size: 12px; }
+		.book-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+		.book-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; min-width: 0; padding: 13px 10px 13px 2px; border-bottom: 1px solid var(--line); }
+		.book-copy { min-width: 0; }
+		.book-title { display: block; margin-bottom: 3px; font-weight: 600; }
+		.book-byline { color: var(--muted); font-size: 12px; }
+		.book-side { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+		.price { color: var(--green-dark); font: 500 13px "DM Mono", monospace; white-space: nowrap; }
+		.availability, .detail-panel, .inline-result, .notice-list, .record-list { margin-top: 17px; }
+		.availability h3, .detail-panel h3 { margin-bottom: 11px; font-size: 14px; }
+		.table-wrap { overflow-x: auto; }
+		table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+		th { padding: 9px 10px; color: var(--muted); font: 11px "DM Mono", monospace; text-transform: uppercase; }
+		td { padding: 11px 10px; border-top: 1px solid var(--line); }
+		.stock { display: inline-flex; align-items: center; gap: 7px; }
+		.stock::before { width: 7px; height: 7px; border-radius: 50%; background: var(--coral); content: ""; }
+		.stock.yes::before { background: #48845f; }
+		.split { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+		.subsection + .subsection { padding-left: 28px; border-left: 1px solid var(--line); }
+		.subsection h3 { margin: 0 0 14px; font-size: 15px; }
+		.store-favorite { display: grid; grid-template-columns: minmax(170px, 1fr) auto; align-items: end; gap: 10px; }
+		.store-card { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; padding: 15px 0 0; }
+		.store-card strong { font-size: 14px; }
+		.store-card p { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+		.empty { padding: 13px 0; color: var(--muted); font-size: 13px; }
+		.list-item { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 0; border-top: 1px solid var(--line); }
+		.list-item:first-child { border-top: 0; }
+		.list-item strong { display: block; font-size: 13px; }
+		.list-item small { color: var(--muted); }
+		.text-button { padding: 5px 0 5px 8px; border: 0; background: none; color: var(--coral); font-size: 12px; font-weight: 600; }
+		.wide-form { display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 10px; }
+		.inline-result { padding: 13px 15px; border-left: 3px solid var(--yellow); background: #f6f2df; font-size: 13px; line-height: 1.5; }
+		.inline-result:empty { display: none; }
+		.inline-result.error { border-color: var(--coral); background: #f7eae5; }
+		.notice-list { border-top: 1px solid var(--line); }
+		.notice-list:empty { display: none; }
+		.notice { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+		.scan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+		.scan-grid .subsection + .subsection { padding-left: 28px; border-left: 1px solid var(--line); }
+		.synopsis { margin: 10px 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+		.review { padding: 8px 0; border-top: 1px solid var(--line); font-size: 12px; }
+		.review b { color: var(--coral); margin-right: 7px; }
+		.records { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 27px; }
+		.records h3 { margin: 0 0 10px; font-size: 15px; }
+		.record { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 11px 0; border-top: 1px solid var(--line); font-size: 13px; }
+		.record small { color: var(--muted); }
+		.record .button { grid-row: span 2; align-self: center; }
+		footer { display: flex; justify-content: space-between; gap: 12px; padding: 17px 0 28px; border-top: 1px solid var(--line); color: var(--muted); font: 11px "DM Mono", monospace; }
+		#flash { position: fixed; z-index: 5; right: 22px; bottom: 22px; max-width: min(420px, calc(100% - 44px)); padding: 13px 16px; border: 1px solid var(--line); background: var(--ink); color: white; box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); pointer-events: none; transition: .2s; }
+		#flash.visible { opacity: 1; transform: translateY(0); }
+		@media (max-width: 740px) {
+			.shell { width: min(100% - 24px, 600px); }
+			.topbar { min-height: 64px; }
+			.intro { align-items: start; flex-direction: column; gap: 11px; padding: 27px 0 20px; }
+			.intro-note { max-width: 410px; }
+			.module { padding: 18px 15px; }
+			.book-results { grid-template-columns: 1fr; }
+			.split, .scan-grid, .records { grid-template-columns: 1fr; gap: 22px; }
+			.subsection + .subsection, .scan-grid .subsection + .subsection { padding: 20px 0 0; border-top: 1px solid var(--line); border-left: 0; }
+			.form-row, .wide-form { grid-template-columns: 1fr 1fr; display: grid; }
+			.wide-form .button { grid-column: 1 / -1; }
+			.search-row { align-items: stretch; }
+			.search-row .button { flex-shrink: 0; }
+			.module-title { font-size: 17px; }
+		}
+		@media (max-width: 430px) {
+			.top-meta { font-size: 11px; }
+			.brand small { display: none; }
+			.search-row { flex-direction: column; }
+			.search-row .button { width: 100%; }
+			.store-favorite { grid-template-columns: 1fr; }
+			.book-row { align-items: flex-start; }
+			.book-side { flex-direction: column; align-items: end; gap: 6px; }
+			.form-row, .wide-form { grid-template-columns: 1fr; }
+			.wide-form .button { grid-column: auto; }
+			footer { font-size: 9px; }
+		}
+		@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+	</style>
+</head>
+<body>
+	<div class="shell">
+		<header class="topbar">
+			<div class="brand"><span class="brand-mark" aria-hidden="true">L</span><span>livraria <small>consulta & retirada</small></span></div>
+			<div class="top-meta"><span class="live-dot" aria-hidden="true"></span><span>Atendimento sem login</span></div>
+		</header>
+
+		<div class="intro">
+			<div><p class="eyebrow">Seu próximo capítulo começa aqui</p><h1>Painel da livraria</h1></div>
+			<p class="intro-note">Estoque, localização e retirada em um só lugar.</p>
+		</div>
+
+		<main>
+			<section class="module" aria-labelledby="catalog-title">
+				<div class="module-head"><div><h2 class="module-title" id="catalog-title"><span class="module-index">01</span>Catálogo e disponibilidade</h2><p class="module-desc">Consulte por título, autor ou trecho.</p></div></div>
+				<form class="search-row" id="search-form">
+					<div class="field"><label for="search-term">Título ou autor</label><input id="search-term" name="q" placeholder="Ex.: Machado de Assis" autocomplete="off"></div>
+					<button class="button" type="submit">Buscar livros</button>
+				</form>
+				<div class="book-results" id="book-results" aria-live="polite"></div>
+				<div class="availability" id="availability" aria-live="polite"></div>
+			</section>
+
+			<section class="module" aria-labelledby="stores-title">
+				<div class="module-head"><div><h2 class="module-title" id="stores-title"><span class="module-index">02</span>Lojas</h2><p class="module-desc">Horários, endereço e preferência.</p></div></div>
+				<div class="split">
+					<div class="subsection">
+						<h3>Loja favorita</h3>
+						<form class="store-favorite" id="favorite-form">
+							<div class="field"><label for="favorite-store">Priorizar disponibilidade</label><select id="favorite-store" required></select></div>
+							<button class="button secondary" type="submit">Salvar favorita</button>
+						</form>
+					</div>
+					<div class="subsection">
+						<h3>Informações da loja</h3>
+						<div class="field"><label for="store-details-select">Selecionar loja</label><select id="store-details-select"></select></div>
+						<div id="store-details" class="store-card"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="module" aria-labelledby="wishes-title">
+				<div class="module-head"><div><h2 class="module-title" id="wishes-title"><span class="module-index">03</span>Lista de desejos e avisos</h2><p class="module-desc">Guarde títulos e acompanhe reposições.</p></div></div>
+				<div class="split">
+					<div class="subsection">
+						<h3>Lista de desejos</h3>
+						<form class="form-row" id="wish-form">
+							<div class="field"><label for="wish-book">Livro</label><select id="wish-book" required></select></div>
+							<button class="button" type="submit">Adicionar</button>
+						</form>
+						<div class="record-list" id="wish-list"></div>
+					</div>
+					<div class="subsection">
+						<h3>Aviso de reposição</h3>
+						<form class="wide-form" id="notice-form">
+							<div class="field"><label for="notice-book">Livro</label><select id="notice-book" required></select></div>
+							<div class="field"><label for="notice-store">Loja</label><select id="notice-store" required></select></div>
+							<button class="button" type="submit">Pedir aviso</button>
+						</form>
+						<div class="notice-list" id="notifications" aria-live="polite"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="module" aria-labelledby="in-store-title">
+				<div class="module-head"><div><h2 class="module-title" id="in-store-title"><span class="module-index">04</span>Na loja</h2><p class="module-desc">Consulte sinopse, avaliações e estante.</p></div></div>
+				<div class="scan-grid">
+					<div class="subsection">
+						<h3>Escanear código</h3>
+						<form class="form-row" id="scan-form">
+							<div class="field"><label for="scan-isbn">ISBN</label><input id="scan-isbn" placeholder="Digite o código de barras" required></div>
+							<button class="button" type="submit">Consultar</button>
+						</form>
+						<div class="detail-panel" id="scan-result" aria-live="polite"></div>
+					</div>
+					<div class="subsection">
+						<h3>Localizar na estante</h3>
+						<form class="wide-form" id="locate-form">
+							<div class="field"><label for="locate-book">Livro</label><select id="locate-book" required></select></div>
+							<div class="field"><label for="locate-store">Loja</label><select id="locate-store" required></select></div>
+							<button class="button" type="submit">Localizar</button>
+						</form>
+						<div class="inline-result" id="locate-result" aria-live="polite"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="module" aria-labelledby="orders-title">
+				<div class="module-head"><div><h2 class="module-title" id="orders-title"><span class="module-index">05</span>Pedidos e notas fiscais</h2><p class="module-desc">Pague pelo app e retire no balcão.</p></div></div>
+				<form class="wide-form" id="purchase-form">
+					<div class="field"><label for="purchase-book">Livro</label><select id="purchase-book" required></select></div>
+					<div class="field"><label for="purchase-store">Loja</label><select id="purchase-store" required></select></div>
+					<div class="field"><label for="payment-method">Pagamento</label><select id="payment-method"><option value="pix">Pix</option><option value="cartao">Cartão</option></select></div>
+					<button class="button" type="submit">Pagar e gerar retirada</button>
+				</form>
+				<div class="records">
+					<div><h3>Pedidos</h3><div id="order-list" class="record-list"></div></div>
+					<div><h3>Notas fiscais</h3><div id="invoice-list" class="record-list"></div></div>
+				</div>
+			</section>
+		</main>
+		<footer><span>Livraria · São Paulo</span><span>Catálogo e serviços da loja</span></footer>
+	</div>
+	<div id="flash" role="status" aria-live="polite"></div>
+
+	<script>
+		const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+		const $ = (selector) => document.querySelector(selector);
+		let catalog = [];
+		let stores = [];
+		let flashTimer;
+
+		function escapeHtml(value) {
+			return String(value).replace(/[&<>"']/g, (character) => ({
+				"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+			})[character]);
+		}
+
+		async function api(url, options = {}) {
+			const response = await fetch(url, {
+				...options,
+				headers: { "Content-Type": "application/json", ...(options.headers || {}) }
+			});
+			if (response.status === 204) return null;
+			const body = await response.json();
+			if (!response.ok) throw new Error(body.erro || "Não foi possível concluir a operação.");
+			return body;
+		}
+
+		function flash(message) {
+			const element = $("#flash");
+			element.textContent = message;
+			element.classList.add("visible");
+			clearTimeout(flashTimer);
+			flashTimer = setTimeout(() => element.classList.remove("visible"), 3600);
+		}
+
+		function showResult(selector, message, error = false) {
+			const element = $(selector);
+			element.textContent = message;
+			element.classList.toggle("error", error);
+		}
+
+		function optionsFor(items, valueKey, labelKey) {
+			return items.map((item) => `<option value="${escapeHtml(item[valueKey])}">${escapeHtml(item[labelKey])}</option>`).join("");
+		}
+
+		function fillSelect(selector, options, placeholder) {
+			$(selector).innerHTML = `${placeholder ? `<option value="">${escapeHtml(placeholder)}</option>` : ""}${options}`;
+		}
+
+		async function loadCatalog(termo = "") {
+			catalog = await api(`/api/livros?q=${encodeURIComponent(termo)}`);
+			const results = $("#book-results");
+			if (!catalog.length) {
+				results.innerHTML = '<div class="empty">Nenhum livro encontrado.</div>';
+				return;
+			}
+			results.innerHTML = catalog.map((book) => `
+				<article class="book-row">
+					<div class="book-copy"><span class="book-title">${escapeHtml(book.titulo)}</span><span class="book-byline">${escapeHtml(book.autor)}</span></div>
+					<div class="book-side"><span class="price">${money.format(book.preco)}</span><button class="button secondary compact" data-availability="${escapeHtml(book.isbn)}">Ver lojas</button></div>
+				</article>`).join("");
+			results.querySelectorAll("[data-availability]").forEach((button) => {
+				button.addEventListener("click", () => loadAvailability(button.dataset.availability));
+			});
+		}
+
+		async function loadAvailability(isbn) {
+			try {
+				const items = await api(`/api/livros/${encodeURIComponent(isbn)}/disponibilidade`);
+				const book = catalog.find((item) => item.isbn === isbn) || await api(`/api/livros/${encodeURIComponent(isbn)}`);
+				$("#availability").innerHTML = `
+					<h3>${escapeHtml(book.titulo)} <span class="price">${money.format(book.preco)}</span></h3>
+					<div class="table-wrap"><table><thead><tr><th>Loja</th><th>Disponibilidade</th><th>Exemplares</th><th>Preço</th></tr></thead>
+					<tbody>${items.map((item) => `<tr><td>${escapeHtml(item.loja)}</td><td><span class="stock ${item.disponivel ? "yes" : ""}">${item.disponivel ? "Disponível" : "Indisponível"}</span></td><td>${item.quantidade}</td><td>${money.format(item.preco)}</td></tr>`).join("")}</tbody></table></div>`;
+			} catch (error) { flash(error.message); }
+		}
+
+		async function loadStoreDetails(id) {
+			if (!id) return;
+			try {
+				const store = await api(`/api/lojas/${encodeURIComponent(id)}`);
+				$("#store-details").innerHTML = `<strong>${escapeHtml(store.nome)}</strong><span class="mono">${escapeHtml(store.id)}</span><p>${escapeHtml(store.endereco)}<br>${escapeHtml(store.horario)}</p>`;
+			} catch (error) { flash(error.message); }
+		}
+
+		async function loadWishes() {
+			const wishes = await api("/api/desejos");
+			$("#wish-list").innerHTML = wishes.length ? wishes.map((item) => `
+				<div class="list-item"><div><strong>${escapeHtml(item.titulo)}</strong><small>${escapeHtml(item.autor)} · ${money.format(item.preco)} · ${item.disponivel ? "Disponível" : "Indisponível"}</small></div><button class="text-button" data-remove-wish="${escapeHtml(item.isbn)}">Remover</button></div>`).join("") : '<div class="empty">A lista está vazia.</div>';
+			$("#wish-list").querySelectorAll("[data-remove-wish]").forEach((button) => button.addEventListener("click", async () => {
+				try { await api(`/api/desejos/${encodeURIComponent(button.dataset.removeWish)}`, { method: "DELETE" }); await loadWishes(); }
+				catch (error) { flash(error.message); }
+			}));
+		}
+
+		async function loadNotifications() {
+			const items = await api("/api/notificacoes");
+			$("#notifications").innerHTML = items.map((item) => `<div class="notice">${escapeHtml(item.mensagem)}</div>`).join("");
+		}
+
+		async function loadOrdersAndInvoices() {
+			const [orders, invoices] = await Promise.all([api("/api/pedidos"), api("/api/notas-fiscais")]);
+			$("#order-list").innerHTML = orders.length ? orders.map((order) => `
+				<div class="record"><div><strong>${escapeHtml(order.codigo_retirada)} · ${escapeHtml(order.titulo)}</strong></div><button class="button secondary compact" data-pickup="${escapeHtml(order.codigo_retirada)}" ${order.status === "Retirado" ? "disabled" : ""}>${escapeHtml(order.status)}</button><small>${escapeHtml(order.loja)} · ${escapeHtml(order.forma_pagamento)}</small></div>`).join("") : '<div class="empty">Nenhum pedido.</div>';
+			$("#order-list").querySelectorAll("[data-pickup]:not(:disabled)").forEach((button) => button.addEventListener("click", async () => {
+				try { await api(`/api/pedidos/${encodeURIComponent(button.dataset.pickup)}/retirada`, { method: "POST" }); await loadOrdersAndInvoices(); }
+				catch (error) { flash(error.message); }
+			}));
+			$("#invoice-list").innerHTML = invoices.length ? invoices.map((invoice) => `
+				<div class="record"><strong>Nota ${invoice.numero} · ${escapeHtml(invoice.titulo)}</strong><span class="price">${money.format(invoice.total)}</span><small>${escapeHtml(invoice.loja)} · ${new Date(invoice.emitida_em).toLocaleString("pt-BR")}</small><small>${escapeHtml(invoice.forma_pagamento)} · ISBN ${escapeHtml(invoice.isbn)}</small></div>`).join("") : '<div class="empty">Nenhuma nota fiscal.</div>';
+		}
+
+		$("#search-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			try { $("#availability").innerHTML = ""; await loadCatalog($("#search-term").value); }
+			catch (error) { flash(error.message); }
+		});
+
+		$("#favorite-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			try { const result = await api("/api/loja-favorita", { method: "PUT", body: JSON.stringify({ loja_id: $("#favorite-store").value }) }); flash(`Loja favorita: ${result.loja_favorita}`); }
+			catch (error) { flash(error.message); }
+		});
+
+		$("#store-details-select").addEventListener("change", (event) => loadStoreDetails(event.target.value));
+
+		$("#wish-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			try { await api("/api/desejos", { method: "POST", body: JSON.stringify({ isbn: $("#wish-book").value }) }); await loadWishes(); flash("Livro adicionado à lista de desejos."); }
+			catch (error) { flash(error.message); }
+		});
+
+		$("#notice-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			try { await api("/api/avisos", { method: "POST", body: JSON.stringify({ isbn: $("#notice-book").value, loja_id: $("#notice-store").value }) }); flash("Aviso de reposição cadastrado."); }
+			catch (error) { flash(error.message); }
+		});
+
+		$("#scan-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			try {
+				const book = await api(`/api/livros/${encodeURIComponent($("#scan-isbn").value)}`);
+				$("#scan-result").innerHTML = `<h3>${escapeHtml(book.titulo)}</h3><div class="book-byline">${escapeHtml(book.autor)} · ${money.format(book.preco)}</div><p class="synopsis">${escapeHtml(book.sinopse)}</p><div class="review"><b>Média ${book.media_avaliacoes === null ? "—" : Number(book.media_avaliacoes).toFixed(1)}</b>${book.avaliacoes.length} avaliação(ões)</div>${book.avaliacoes.map((review) => `<div class="review"><b>${review.nota}/5</b>${escapeHtml(review.comentario)}</div>`).join("")}`;
+			} catch (error) { $("#scan-result").innerHTML = `<div class="inline-result error">${escapeHtml(error.message)}</div>`; }
+		});
+
+		$("#locate-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			try {
+				const location = await api("/api/localizacoes", { method: "POST", body: JSON.stringify({ isbn: $("#locate-book").value, loja_id: $("#locate-store").value }) });
+				showResult("#locate-result", `Setor ${location.setor} · Estante ${location.estante} · Prateleira ${location.prateleira}`);
+			} catch (error) { showResult("#locate-result", error.message, true); }
+		});
+
+		$("#purchase-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			try {
+				const pedido = await api("/api/pedidos", { method: "POST", body: JSON.stringify({ isbn: $("#purchase-book").value, loja_id: $("#purchase-store").value, forma_pagamento: $("#payment-method").value }) });
+				flash(`Pedido ${pedido.codigo_retirada} · ${pedido.status}`);
+				await Promise.all([loadOrdersAndInvoices(), loadAvailability(pedido.isbn), loadWishes()]);
+			} catch (error) { flash(error.message); }
+		});
+
+		async function initialize() {
+			try {
+				[catalog, stores] = await Promise.all([api("/api/livros"), api("/api/lojas")]);
+				const bookOptions = optionsFor(catalog, "isbn", "titulo");
+				const storeOptions = optionsFor(stores, "id", "nome");
+				["#wish-book", "#notice-book", "#locate-book", "#purchase-book"].forEach((selector) => fillSelect(selector, bookOptions));
+				["#favorite-store", "#store-details-select", "#notice-store", "#locate-store", "#purchase-store"].forEach((selector) => fillSelect(selector, storeOptions));
+				const favorite = await api("/api/loja-favorita");
+				if (favorite.loja_favorita) $("#favorite-store").value = favorite.loja_favorita;
+				await Promise.all([loadCatalog(), loadWishes(), loadNotifications(), loadOrdersAndInvoices()]);
+				await loadStoreDetails(stores[0].id);
+			} catch (error) { flash(error.message); }
+		}
+
+		initialize();
+	</script>
+</body>
+</html>
